@@ -16,13 +16,13 @@
   </a>
 </p>
 
-# Model Context Protocol (MCP) Server for Xingchen workflows
+# iFlytek Workflow MCP Server
 
 [The Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) is an open protocol designed for effortless integration between LLM applications and external data sources or tools, offering a standardized framework to seamlessly provide LLMs with the context they require.
 
 This a simple implementation of an MCP server using iFlytek. It enables calling iFlytek workflows through MCP tools.
 
-## iFlytek Workflow Features
+## Features
 
 ### Functional Overview
 
