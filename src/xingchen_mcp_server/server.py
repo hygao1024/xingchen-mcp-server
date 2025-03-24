@@ -35,12 +35,8 @@ class XFXingchenAPI(ABC):
         if not config_path:
             raise ValueError("config path not provided")
 
-        def load_flows_from_yaml(file_path: str) -> List[Flow]:
-            data = OmegaConf.load(file_path)
-            return [Flow(**flow) for flow in data]
-
         self.base_url = "https://xingchen-api.xf-yun.com"
-        self.data = load_flows_from_yaml(config_path)
+        self.data = self._load_flows_from_yaml(config_path)
         self.name_idx: Dict[str, int] = {}
 
         # add sys_upload_file tool
@@ -62,6 +58,11 @@ class XFXingchenAPI(ABC):
         # build name_idx
         for i, flow in enumerate(self.data):
             self.name_idx[flow.name] = i
+
+    @staticmethod
+    def _load_flows_from_yaml(file_path: str) -> List[Flow]:
+        data = OmegaConf.load(file_path)
+        return [Flow(**flow) for flow in data]
 
     def chat_message(
             self,
@@ -106,7 +107,11 @@ class XFXingchenAPI(ABC):
                         yield f"Error decoding JSON: {line}"
         else:
             json_data = response.json()
-            return json_data if json_data.get("code", 0) != 0 else json_data["choices"][0]["delta"]["content"]
+            if json_data.get("code", 0) != 0:
+                yield json.dumps(json_data)
+            else:
+                yield json_data["choices"][0]["delta"]["content"]
+
 
     def get_flow_info(
             self,
@@ -138,10 +143,9 @@ class XFXingchenAPI(ABC):
         headers = {
             "Authorization": f"Bearer {api_key}"
         }
-        files = {
-            "file": open(file_path, "rb")
-        }
-        response = requests.post(url, headers=headers, files=files)
+        with open(file_path, "rb") as file:
+            files = {"file": file}
+            response = requests.post(url, headers=headers, files=files)
         response.raise_for_status()
         return response.content.decode('utf-8')
 

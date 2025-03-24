@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://xinghuo.xfyun.cn/botcenter/createbot"><img src="https://xinghuo.xfyun.cn/vulcan/static/media/logo.ec6559cd3c84699e84ff547f4fb9fd31.svg"></a>
+  <a href="https://xinghuo.xfyun.cn/botcenter/createbot"><img src="https://openres.xfyun.cn/xfyundoc/2024-04-26/1396db8a-313b-40f5-be2a-5babcad9cd64/1714102184743/sparklogo.svg"></a>
 </p>
 <p align="center">
     The fastest way to build workflows with an AI agent platform!

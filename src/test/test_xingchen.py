@@ -1,11 +1,12 @@
+import logging
+
 from typing import Iterator
 
-from src.xingchen_mcp_server.server import XFXingchenAPI
+from src.xingchen_mcp_server.server import xingchen_api
 
 
 def test_chat():
-    config_path = "../../config.yaml"
-    xingchen_api = XFXingchenAPI(config_path)
+
     resp = xingchen_api.chat_message(
         xingchen_api.data[0],
         {
@@ -14,6 +15,6 @@ def test_chat():
     )
     if isinstance(resp, Iterator):
         for res in resp:
-            print(res)
+            logging.info(res)
     else:
-        print(resp)
+        logging.info(resp)

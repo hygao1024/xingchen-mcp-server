@@ -1,3 +1,5 @@
+import logging
+
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
@@ -36,13 +38,14 @@ async def run():
 
             # List available tools
             tools = await session.list_tools()
-            print(tools)
+            logging.info(f"tools: {tools}")
 
             # Call a tool
-            result = await session.call_tool("sys_upload_file", arguments={"file": "/Users/hygao1024/Documents/iFlytek/Work/测试图片.jpg"})
-            print(result)
-            result = await session.call_tool("image_generator", arguments={"AGENT_USER_INPUT": "你好"})
-            print(result)
+            sys_upload_file_result = await session.call_tool("sys_upload_file", arguments={"file": "/Users/hygao1024/Documents/iFlytek/Work/测试图片.jpg"})
+            logging.info(f"call sys_upload_file result: {sys_upload_file_result}")
+
+            image_generator_result = await session.call_tool("image_generator", arguments={"AGENT_USER_INPUT": "你好"})
+            logging.info(f"call image_generator result: {image_generator_result}")
 
 
 def test_run():
