@@ -3,7 +3,7 @@ import json
 import os
 from abc import ABC
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Iterator
 
 import mcp.server.stdio
 import mcp.types as types
@@ -31,8 +31,7 @@ class Flow:
 
 
 class XFXingchenAPI(ABC):
-    def __init__(self,
-                 config_path):
+    def __init__(self, config_path):
         if not config_path:
             raise ValueError("config path not provided")
 
@@ -43,6 +42,24 @@ class XFXingchenAPI(ABC):
         self.base_url = "https://xingchen-api.xf-yun.com"
         self.data = load_flows_from_yaml(config_path)
         self.name_idx: Dict[str, int] = {}
+
+        # add sys_upload_file tool
+        self.data.append(
+            Flow(
+                flow_id="sys_upload_file",
+                name="sys_upload_file",
+                api_key=self.data[0].api_key,
+                description="upload file. Format support: image(jpg、png、bmp、jpeg), doc(pdf)",
+                params=[Param(
+                    name="file",
+                    type="string",
+                    description="file path",
+                    required=True
+                )],
+            )
+        )
+
+        # build name_idx
         for i, flow in enumerate(self.data):
             self.name_idx[flow.name] = i
 
@@ -51,7 +68,7 @@ class XFXingchenAPI(ABC):
             flow: Flow,
             inputs: Dict[str, Any],
             stream: bool = True
-    ):
+    ) -> str:
         """
         flow chat request
         :param flow:
@@ -74,21 +91,28 @@ class XFXingchenAPI(ABC):
         response.raise_for_status()
         if stream:
             for line in response.iter_lines():
-                if line:
-                    if line.startswith(b'data:'):
-                        try:
-                            json_data = json.loads(line[5:].decode('utf-8'))
-                            yield json_data
-                        except json.JSONDecodeError:
-                            print(f"Error decoding JSON: {line}")
+                if line and line.startswith(b'data:'):
+                    try:
+                        src_content = line[5:].decode('utf-8')
+                        json_data = json.loads(src_content)
+                        if json_data.get("code", 0) != 0:
+                            yield src_content
+                            break
+                        choice = json_data["choices"][0]
+                        yield choice["delta"]["content"]
+                        if choice["finish_reason"] == "stop":
+                            break
+                    except json.JSONDecodeError:
+                        yield f"Error decoding JSON: {line}"
         else:
-            return response.json()
+            json_data = response.json()
+            return json_data if json_data.get("code", 0) != 0 else json_data["choices"][0]["delta"]["content"]
 
     def get_flow_info(
             self,
             flow_id: str,
             api_key: str
-    ):
+    ) -> Dict[str, Any]:
         """
         get flow info, such as flow description, parameters
         # TODO To be called in the future
@@ -103,6 +127,23 @@ class XFXingchenAPI(ABC):
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         return response.json()
+
+    def upload_file(
+            self,
+            api_key,
+            file_path,
+    ) -> str:
+
+        url = f"{self.base_url}/workflow/v1/upload_file"
+        headers = {
+            "Authorization": f"Bearer {api_key}"
+        }
+        files = {
+            "file": open(file_path, "rb")
+        }
+        response = requests.post(url, headers=headers, files=files)
+        response.raise_for_status()
+        return response.content.decode('utf-8')
 
 
 config_path = os.getenv("CONFIG_PATH")
@@ -149,23 +190,37 @@ async def handle_call_tool(
     :param arguments:   tool arguments
     :return:
     """
-    if name in xingchen_api.name_idx:
-        flow = xingchen_api.data[xingchen_api.name_idx[name]]
-        responses = xingchen_api.chat_message(
+    if name not in xingchen_api.name_idx:
+        raise ValueError(f"Unknown tool: {name}")
+    flow = xingchen_api.data[xingchen_api.name_idx[name]]
+    if name == "sys_upload_file":
+        data = xingchen_api.upload_file(
+            flow.api_key,
+            arguments["file"],
+        )
+    else:
+        data = xingchen_api.chat_message(
             flow,
             arguments,
         )
-        mcp_out = []
-        for res in responses:
+    mcp_out = []
+
+    if isinstance(data, Iterator):
+        for res in data:
             mcp_out.append(
                 types.TextContent(
                     type='text',
-                    text=res["choices"][0]["delta"]["content"]
+                    text=res
                 )
             )
-        return mcp_out
     else:
-        raise ValueError(f"Unknown tool: {name}")
+        mcp_out.append(
+            types.TextContent(
+                type='text',
+                text=data
+            )
+        )
+    return mcp_out
 
 
 async def main():

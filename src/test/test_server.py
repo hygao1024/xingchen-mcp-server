@@ -4,16 +4,16 @@ from mcp.client.stdio import stdio_client
 # Create server parameters for stdio connection
 server_params = StdioServerParameters(
     command="python",  # Executable
-    args=["/Users/hygao1024/Projects/src/github.com/hygao1024/xingchen-mcp-server/src/xingchen_mcp_server/server.py"],  # Optional command line arguments
+    args=["../xingchen_mcp_server/server.py"],  # Optional command line arguments
     env={
-        "CONFIG_PATH": "/Users/hygao1024/Projects/src/github.com/hygao1024/xingchen-mcp-server/config.yaml"
+        "CONFIG_PATH": "../../config.yaml"
     },  # Optional environment variables
 )
 
 
 # Optional: create a sampling callback
 async def handle_sampling_message(
-    message: types.CreateMessageRequestParams,
+        message: types.CreateMessageRequestParams,
 ) -> types.CreateMessageResult:
     return types.CreateMessageResult(
         role="assistant",
@@ -29,7 +29,7 @@ async def handle_sampling_message(
 async def run():
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(
-            read, write, sampling_callback=handle_sampling_message
+                read, write, sampling_callback=handle_sampling_message
         ) as session:
             # Initialize the connection
             await session.initialize()
@@ -38,12 +38,14 @@ async def run():
             tools = await session.list_tools()
             print(tools)
 
-            # # Call a tool
-            result = await session.call_tool("test", arguments={"AGENT_USER_INPUT": "你好"})
+            # Call a tool
+            result = await session.call_tool("sys_upload_file", arguments={"file": "/Users/hygao1024/Documents/iFlytek/Work/测试图片.jpg"})
+            print(result)
+            result = await session.call_tool("image_generator", arguments={"AGENT_USER_INPUT": "你好"})
             print(result)
 
 
-if __name__ == "__main__":
+def test_run():
     import asyncio
 
     asyncio.run(run())
