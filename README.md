@@ -4,6 +4,17 @@
 <p align="center">
     The fastest way to build workflows with an AI agent platform!
 </p>
+<p align="center">
+  <a href="https://github.com/hygao1024/xingchen-mcp-server/blob/main/LICENSE" target="_blank">
+      <img src="https://img.shields.io/static/v1?label=license&message=MIT licensed&color=white" alt="License">
+  </a> |
+  <a href="https://xinghuo.xfyun.cn/botcenter/createbot" target="_blank">
+      Docs
+  </a> |
+  <a href="https://xinghuo.xfyun.cn/botcenter/createbot" target="_blank">
+      Homepage
+  </a>
+</p>
 
 # Model Context Protocol (MCP) Server for Xingchen workflows
 
