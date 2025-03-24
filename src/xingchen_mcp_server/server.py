@@ -40,6 +40,7 @@ class XFXingchenAPI(ABC):
             data = OmegaConf.load(file_path)
             return [Flow(**flow) for flow in data]
 
+        self.base_url = "https://xingchen-api.xf-yun.com"
         self.data = load_flows_from_yaml(config_path)
         self.name_idx: Dict[str, int] = {}
         for i, flow in enumerate(self.data):
@@ -51,7 +52,14 @@ class XFXingchenAPI(ABC):
             inputs: Dict[str, Any],
             stream: bool = True
     ):
-        url = "https://xingchen-api.xf-yun.com/workflow/v1/chat/completions"
+        """
+        flow chat request
+        :param flow:
+        :param inputs:
+        :param stream:
+        :return:
+        """
+        url = f"{self.base_url}/workflow/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {flow.api_key}",
             "Content-Type": "application/json"
@@ -76,15 +84,38 @@ class XFXingchenAPI(ABC):
         else:
             return response.json()
 
+    def get_flow_info(
+            self,
+            flow_id: str,
+            api_key: str
+    ):
+        """
+        get flow info, such as flow description, parameters
+        # TODO To be called in the future
+        :param flow_id:
+        :param api_key:
+        :return:
+        """
+        url = f"{self.base_url}/workflow/v1/flows/{flow_id}"
+        headers = {
+            "Authorization": f"Bearer {api_key}"
+        }
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json()
+
 
 config_path = os.getenv("CONFIG_PATH")
-# config_path = "/Users/hygao1024/Projects/src/github.com/hygao1024/xingchen-mcp-server/config.yaml"
 server = Server("xingchen_mcp_server")
 xingchen_api = XFXingchenAPI(config_path)
 
 
 @server.list_tools()
 async def handle_list_tools() -> list[types.Tool]:
+    """
+    List available tools，and convert them to MCP client can call.
+    :return:
+    """
     tools = []
     for i, flow in enumerate(xingchen_api.data):
         inputSchema = {
@@ -112,6 +143,12 @@ async def handle_list_tools() -> list[types.Tool]:
 async def handle_call_tool(
         name: str, arguments: dict | None
 ) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
+    """
+    Process valid tool call requests and convert them to MCP responses
+    :param name:        tool name
+    :param arguments:   tool arguments
+    :return:
+    """
     if name in xingchen_api.name_idx:
         flow = xingchen_api.data[xingchen_api.name_idx[name]]
         responses = xingchen_api.chat_message(
