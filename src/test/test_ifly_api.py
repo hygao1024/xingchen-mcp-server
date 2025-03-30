@@ -2,13 +2,12 @@ import logging
 
 from typing import Iterator
 
-from src.xingchen_mcp_server.server import xingchen_api
-
 
 def test_chat():
-
-    resp = xingchen_api.chat_message(
-        xingchen_api.data[0],
+    from mcp_server.entities.ifly_client import IFlyWorkflowClient
+    ifly_client = IFlyWorkflowClient()
+    resp = ifly_client.chat_message(
+        ifly_client.flows[0],
         {
             "AGENT_USER_INPUT": "a picture of a cat"
         }

@@ -5,7 +5,7 @@
     The fastest way to build workflows with an AI agent platform!
 </p>
 <p align="center">
-  <a href="https://github.com/hygao1024/xingchen-mcp-server/blob/main/LICENSE" target="_blank">
+  <a href="https://github.com/iflytek/ifly-workflow-mcp-server/blob/main/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT licensed&color=white" alt="License">
   </a> |
   <a href="https://xinghuo.xfyun.cn/botcenter/createbot" target="_blank">
@@ -67,20 +67,26 @@ This system is built on the iFlytek MCP server and enables intelligent workflow 
 Before using the mcp server, you should prepare a config.yaml to save your workflow info. The example config like this:
 
 ```yaml
-- flow_id: 'flow id'
-  name: 'flow name'
-  description: 'flow description'
-  api_key: 'key:secret'
-  params:
-    - name: 'input key name'
-      type: 'string'
-      description: 'input key description'
-      required: true
-
+- flow_id: 'flow id'              # required
+  name: 'flow name'               # optional, if not set, obtain the name from the cloud.
+  description: 'flow description' # optional, if not set, obtain the description from the cloud.
+  api_key: 'API Key:API Secret'   # required
 ```
 
+#### Get workflow authentication information
+1. [Create a bot](https://xinghuo.xfyun.cn/botcenter/createbot)
+![](./images/create_workflow.png)
 
-
+2. Publish a workflow
+- **Step 1.** Debug the workflow you just created.
+- **Step 2.** Engage in a conversation with your workflow and ensure the conversation is successful.
+- **Step 3.** You can now click the publish button.
+![](./images/debug_workflow.png)
+- **Step 4.** Select "Publish as API" and click the "Configure" button.
+![](./images/publish_workflow.png)
+- **Step 5.** Select the application you need to bind and bind it. Now you can retrieve the corresponding workflow ID and authentication information. Enjoy!
+![](./images/bind_app.png)
+> **Note**: If you find that you are unable to select an app, you can go to https://www.xfyun.cn to apply.
 ### Manual Installation
 
 To add a persistent client, add the following to your `claude_desktop_config.json` or `mcp.json` file:
@@ -88,12 +94,12 @@ To add a persistent client, add the following to your `claude_desktop_config.jso
 ```json
 {
     "mcpServers": {
-        "xingchen-mcp-server": {
+        "ifly-workflow-mcp-server": {
             "command": "uvx",
             "args": [
                 "--from",
-                "git+https://github.com/hygao1024/xingchen-mcp-server",
-                "xingchen_mcp_server"
+                "git+https://github.com/iflytek/ifly-workflow-mcp-server",
+                "ifly_workflow_mcp_server"
             ],
             "env": {
                 "CONFIG_PATH": "$CONFIG_PATH"
@@ -110,12 +116,12 @@ Example config:
 ```json
 {
     "mcpServers": {
-        "xingchen-mcp-server": {
+        "ifly-workflow-mcp-server": {
             "command": "uvx",
             "args": [
                 "--from",
-                "git+https://github.com/hygao1024/xingchen-mcp-server",
-                "xingchen_mcp_server"
+                "git+https://github.com/iflytek/ifly-workflow-mcp-server",
+                "ifly_workflow_mcp_server"
             ],
             "env": {
                 "CONFIG_PATH": "/Users/hygao1024/Projects/config.yaml"
@@ -126,7 +132,3 @@ Example config:
 ```
 
 
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/zcaceres/markdownify-mcp/blob/main/LICENSE) file for details.

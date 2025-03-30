@@ -452,7 +452,7 @@ wheels = [
 ]
 
 [[package]]
-name = "xingchen-mcp-server"
+name = "ifly-workflow-mcp-server"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

@@ -3,10 +3,16 @@ import logging
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
+from mcp_server.entities.ifly_client import SysTool
+
 # Create server parameters for stdio connection
 server_params = StdioServerParameters(
-    command="python",  # Executable
-    args=["../xingchen_mcp_server/server.py"],  # Optional command line arguments
+    command="uvx",  # Executable
+    args=[
+        "--from",
+        "../..",
+        "ifly_workflow_mcp_server"
+    ],  # Optional command line arguments
     env={
         "CONFIG_PATH": "../../config.yaml"
     },  # Optional environment variables
@@ -41,11 +47,17 @@ async def run():
             logging.info(f"tools: {tools}")
 
             # Call a tool
-            sys_upload_file_result = await session.call_tool("sys_upload_file", arguments={"file": "/Users/hygao1024/Documents/iFlytek/Work/测试图片.jpg"})
+            sys_upload_file_result = await session.call_tool(
+                SysTool.SYS_UPLOAD_FILE.value,
+                arguments={"file": "/Users/hygao1024/Documents/iFlytek/Work/测试图片.jpg"}
+            )
             logging.info(f"call sys_upload_file result: {sys_upload_file_result}")
 
             image_generator_result = await session.call_tool("image_generator", arguments={"AGENT_USER_INPUT": "你好"})
             logging.info(f"call image_generator result: {image_generator_result}")
+
+            llm_test_result = await session.call_tool("llm_test", arguments={"AGENT_USER_INPUT": "你好"})
+            logging.info(f"call llm_test_result result: {llm_test_result}")
 
 
 def test_run():
