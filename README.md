@@ -22,6 +22,8 @@
 
 This a simple implementation of an MCP server using iFlytek. It enables calling iFlytek workflows through MCP tools.
 
+> 📍**Note：** At present, the warehouse has been contributed to iFlytek, and the latest warehouse address is: [ifly-workflow-mcp-server](https://github.com/iflytek/ifly-workflow-mcp-server)
+
 ## Features
 
 ### Functional Overview
