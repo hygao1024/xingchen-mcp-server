@@ -3,7 +3,7 @@ import logging
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
-from mcp_server.entities.ifly_client import SysTool
+from src.mcp_server.entities.ifly_client import SysTool
 
 # Create server parameters for stdio connection
 server_params = StdioServerParameters(

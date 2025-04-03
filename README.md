@@ -98,7 +98,7 @@ To add a persistent client, add the following to your `claude_desktop_config.jso
             "command": "uvx",
             "args": [
                 "--from",
-                "git+https://github.com/iflytek/ifly-workflow-mcp-server",
+                "git+https://github.com/hygao1024/xingchen-mcp-server",
                 "ifly_workflow_mcp_server"
             ],
             "env": {
@@ -120,7 +120,7 @@ Example config:
             "command": "uvx",
             "args": [
                 "--from",
-                "git+https://github.com/iflytek/ifly-workflow-mcp-server",
+                "git+https://github.com/hygao1024/xingchen-mcp-server",
                 "ifly_workflow_mcp_server"
             ],
             "env": {
