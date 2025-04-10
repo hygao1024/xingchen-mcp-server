@@ -8,7 +8,7 @@ import mcp.types as types
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 
-from src.mcp_server.entities.ifly_client import IFlyWorkflowClient, SysTool
+from .entities.ifly_client import IFlyWorkflowClient, SysTool
 
 
 @asynccontextmanager

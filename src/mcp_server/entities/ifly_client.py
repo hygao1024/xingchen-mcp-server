@@ -7,7 +7,7 @@ from typing import Dict, Any
 import requests
 import yaml
 
-from src.mcp_server.entities.flow import Flow
+from .flow import Flow
 
 
 class SysTool(Enum):
